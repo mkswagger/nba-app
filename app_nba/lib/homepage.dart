@@ -23,21 +23,29 @@ class MyHomePage extends StatelessWidget {
   MyHomePage({Key? key, required this.teams}) : super(key: key);
 
   Future<List<Team>> getTeams() async {
+  try {
     var response = await http.get(Uri.https('balldontlie.io', '/api/v1/teams'));
-    var jsonData = jsonDecode(response.body);
-    List<Team> teams = [];
-
-    for (var eachTeam in jsonData['data']) {
-      final team = Team(
-        abbreviation: eachTeam['abbreviation'],
-        city: eachTeam['city'],
-      );
-      teams.add(team);
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      List<Team> teams = [];
+      for (var eachTeam in jsonData['data']) {
+        final team = Team(
+          abbreviation: eachTeam['abbreviation'],
+          city: eachTeam['city'],
+        );
+        teams.add(team);
+      }
+      print('Number of teams fetched: ${teams.length}');
+      return teams;
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+      return [];
     }
-
-    print(teams.length);
-    return teams;
+  } catch (e) {
+    print('Fetching teams failed with error: $e');
+    return [];
   }
+}
 
  @override
   Widget build(BuildContext context) {
