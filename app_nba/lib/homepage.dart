@@ -8,12 +8,17 @@ class MyHomePage extends StatelessWidget {
 
   Future getTeams() async{
     var response = await http.get(Uri.https('balldontlie.io','/api/v1/teams'));
-    if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
-      print(jsonResponse);
-    } else {
-      print('Request failed with status: ${response.statusCode}.');
+    var jsonData = jsonDecode(response.body);
+
+    for (var eachTeam in jsonData['data']){
+      
     }
+    // if (response.statusCode == 200) {
+    //   var jsonResponse = jsonDecode(response.body);
+    //   print(jsonResponse);
+    // } else {
+    //   print('Request failed with status: ${response.statusCode}.');
+    // }
   }
 
   @override
