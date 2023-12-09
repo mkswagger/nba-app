@@ -1,79 +1,63 @@
 import 'dart:convert';
-import 'dart:ui' show lerpDouble;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:app_nba/model/team.dart';
+import 'model/team.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MaterialApp(
+    home: HomePage(),
+  ));
 }
+class HomePage extends StatelessWidget {
+  List<Team> teams = [];
 
-class MyApp extends StatelessWidget {
+  // get teams
+  Future getTeams() async {
+    var response = await http.get(Uri.https('balldontlie.io', 'api/v1/teams'));
+    var jsonData = jsonDecode(response.body);
+
+    for (var eachTeam in jsonData['data']) {
+      final team = Team(
+        abbreviation: eachTeam['abbreviation'],
+        city: eachTeam['city'],
+      );
+      teams.add(team);
+    }
+
+    print(teams.length);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MyHomePage(teams: []),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  final List<Team> teams;
-
-  MyHomePage({Key? key, required this.teams}) : super(key: key);
-
-  Future<List<Team>> getTeams() async {
-  try {
-    var response = await http.get(Uri.https('balldontlie.io', '/api/v1/teams'));
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      List<Team> teams = [];
-      for (var eachTeam in jsonData['data']) {
-        final team = Team(
-          abbreviation: eachTeam['abbreviation'],
-          city: eachTeam['city'],
-        );
-        teams.add(team);
-      }
-      print('Number of teams fetched: ${teams.length}');
-      return teams;
-    } else {
-      print('Request failed with status: ${response.statusCode}.');
-      return [];
-    }
-  } catch (e) {
-    print('Fetching teams failed with error: $e');
-    return [];
-  }
-}
-
- @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<Team>>(
-        future: getTeams(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            }
-
-            final teams = snapshot.data ?? [];
-
-            return ListView.builder(
-              itemCount: teams.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(teams[index].abbreviation),
+      body: SafeArea(
+        child: FutureBuilder(
+            future: getTeams(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return ListView.builder(
+                  itemCount: teams.length,
+                  padding: EdgeInsets.all(8),
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: ListTile(
+                          title: Text(teams[index].abbreviation),
+                          subtitle: Text(teams[index].city),
+                        ),
+                      ),
+                    );
+                  },
                 );
-              },
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            }),
       ),
     );
   }
