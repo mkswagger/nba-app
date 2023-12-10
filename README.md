@@ -1,16 +1,6 @@
-# app_nba
+# NBA APP 
 
-A new Flutter project.
+- Made an app using Flutter and linked apis to get the latest Information about NBA matches
+- The information includes team details, player details etc
+- Api used - https://www.balldontlie.io/home.html#considerations
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
